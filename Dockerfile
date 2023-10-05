@@ -11,7 +11,7 @@ COPY go.sum .
 # golang:latest image does not contain GCC, while the AMD64 version does.
 ARG CGO_ENABLED=0
 
-ARG version=dev
+ARG version=dev_v1.106.1-rc1
 ARG	commit=HEAD
 
 # Get dependencies - will also be cached if we won't change mod/sum
@@ -33,10 +33,11 @@ RUN set -e ;\
 FROM alpine:latest
 RUN apk add --update --no-cache ca-certificates
 COPY --from=build-env /go/bin/app /go/bin/app
-ADD --chmod=644 ./configs/default.json /models/default.json
-ADD --chmod=644 ./configs/azure.json /models/azure.json
-ADD --chmod=644 ./configs/aws.json /models/aws.json
-ADD --chmod=644 ./configs/gcp.json /models/gcp.json
-ADD --chmod=644 ./configs/alibaba.json /models/alibaba.json
+COPY ./configs/default.json /models/default.json
+COPY ./configs/azure.json /models/azure.json
+COPY ./configs/aws.json /models/aws.json
+COPY ./configs/gcp.json /models/gcp.json
+COPY ./configs/alibaba.json /models/alibaba.json
+RUN chmod 644 /models/*
 USER 1001
 ENTRYPOINT ["/go/bin/app"]
